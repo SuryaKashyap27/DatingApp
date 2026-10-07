@@ -1,8 +1,10 @@
-import { Component, inject,signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../core/services/account-service';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ToastService } from '../../core/services/toast';
 @Component({
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink, RouterLinkActive],
   selector: 'app-nav',
   styleUrl: './nav.css',
   templateUrl: './nav.html',
@@ -10,7 +12,8 @@ import { AccountService } from '../../core/services/account-service';
 export class Nav {
  protected accountService = inject(AccountService);
 //  protected loggedin=signal(false);
-
+private router = inject(Router);
+private toastService = inject(ToastService);
     protected creds: any = {};
     login()
     {
@@ -19,9 +22,13 @@ export class Nav {
                 console.log(result);
                 // this.loggedin.set(true);
                 this.creds = {};
-            },
+                  this.router.navigateByUrl('/members');
+                  this.toastService.success("Logged in successfully");},
+            
             error: (error) => {
-               alert(error.message);
+            //    alert(error.message);
+            console.log(error);
+              this.toastService.error(error.message);
             }
         });
     }
@@ -29,6 +36,8 @@ export class Nav {
     {
       // this.loggedin.set(false);
       this.accountService.logout();
+         this.router.navigateByUrl('/');
+         this.toastService.success("Logged Out");
     }
-  
+
 }

@@ -11,7 +11,7 @@ export class AccountService {
     private http=inject(HttpClient);
     baseUrl = 'https://localhost:5001/api/';
     login(creds: any) {
-        return this.http.post<User>(this.baseUrl+'account/login', creds).pipe(
+        return this.http.post<User>(this.baseUrl+'accounts/login', creds).pipe(
             tap(user =>{this.setCurrentUser(user)
 
                 // if (user) {
