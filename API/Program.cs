@@ -42,6 +42,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false
         };
     });
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 // // Configure the HTTP request pipeline.
@@ -58,6 +60,25 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 app.MapControllers();
+using var scope = app.Services.CreateScope();
+
+var services = scope.ServiceProvider;
+
+try
+{
+    var context = services.GetRequiredService<AppDbContext>();
+
+    await context.Database.MigrateAsync();
+
+    await Seed.SeedUsers(context);
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
+    logger.LogError(ex, "An error occurred during migration");
+}
+
 
 
 app.Run();
