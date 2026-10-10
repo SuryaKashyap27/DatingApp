@@ -1,6 +1,6 @@
 import { Component, Input, input, signal } from '@angular/core';
 import { Register } from '../account/register/register';
-import { User } from '../../types/types';
+import { User } from '../../types/user';
 
 @Component({
   imports: [Register],

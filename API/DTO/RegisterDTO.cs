@@ -11,7 +11,7 @@ namespace API.DTO
         [EmailAddress]
         public  required string Email {get; set;}
         [Required]
-        [MaxLength(4, ErrorMessage="Password must be minimum 4 characters")]
+        [MaxLength(8, ErrorMessage="Password must be minimum 8 characters")]
         public  required string Password {get; set;}
     }
 }

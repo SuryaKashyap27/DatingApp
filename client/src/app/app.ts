@@ -4,7 +4,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { Nav } from '../layout/nav/nav';
 import { AccountService } from '../core/services/account-service';
-import { User } from '../types/types';
+import { User } from '../types/user';
 
 @Component({
   selector: 'app-root',

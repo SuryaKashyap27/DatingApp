@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../core/services/account-service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastService } from '../../core/services/toast';
+import { themes } from '../themes';
 @Component({
   imports: [FormsModule, RouterLink, RouterLinkActive],
   selector: 'app-nav',
@@ -39,5 +40,34 @@ private toastService = inject(ToastService);
          this.router.navigateByUrl('/');
          this.toastService.success("Logged Out");
     }
+
+
+    
+protected selectedTheme = signal<string>(
+  localStorage.getItem('theme') ?? 'light'
+);
+
+protected themes = themes;
+
+ngOnInit(): void {
+  document.documentElement.setAttribute(
+    'data-theme',
+    this.selectedTheme()
+  );
+}
+
+protected handleSelectTheme(theme: string): void {
+  this.selectedTheme.set(theme);
+
+  localStorage.setItem('theme', theme);
+
+  document.documentElement.setAttribute(
+    'data-theme',
+    theme
+  );
+
+  const activeElement = document.activeElement as HTMLElement | null;
+  activeElement?.blur();
+}
 
 }
