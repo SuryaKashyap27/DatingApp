@@ -2,7 +2,7 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { MemberService } from '../../../core/services/member';
+import { MemberService } from '../../../core/services/member-service';
 import { Photo } from '../../../types/member';
 
 @Component({

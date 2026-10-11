@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { MemberService } from '../../../core/services/member';
+import { MemberService } from '../../../core/services/member-service';
 import { Observable } from 'rxjs';
 import { Member } from '../../../types/member';
 import { AsyncPipe } from '@angular/common';

@@ -4,6 +4,7 @@ import { AccountService } from '../../core/services/account-service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastService } from '../../core/services/toast';
 import { themes } from '../themes';
+import { BusyService } from '../../core/services/busy-service';
 @Component({
   imports: [FormsModule, RouterLink, RouterLinkActive],
   selector: 'app-nav',
@@ -15,6 +16,7 @@ export class Nav {
 //  protected loggedin=signal(false);
 private router = inject(Router);
 private toastService = inject(ToastService);
+protected busyService = inject(BusyService);
     protected creds: any = {};
     login()
     {
