@@ -1,0 +1,67 @@
+
+<div class="flex w-full gap-6 min-h-100">
+
+  <!-- Left: Drop zone -->
+  <div class="flex items-center gap-4 w-2/3">
+
+    <label
+      for="drop-zone-file"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      [class.border-purple-600]="isDragging"
+      [class.border-4]="isDragging"
+      [class.bg-purple-100]="isDragging"
+      class="flex flex-col items-center justify-center
+             w-full h-full border-2 border-gray-300
+             border-dashed rounded-lg cursor-pointer">
+
+      <p class="mb-2 text-center">
+        Click to upload or drag and drop
+      </p>
+
+      <input
+        id="drop-zone-file"
+        type="file"
+        accept="image/*"
+        class="hidden"   (change)="onFileSelected($event)" />
+
+    </label>
+  </div>
+
+  <!-- Right: Preview and buttons -->
+  <div class="flex flex-col w-1/3 gap-3">
+
+    @if (imageSource(); as image) {
+      <div class="flex justify-center border-2 border-gray-300 rounded-lg">
+        <img
+          [src]="image"
+          alt="Image preview"
+          class="aspect-square object-cover rounded-lg" />
+      </div>
+    }
+
+    <div class="flex w-full gap-3">
+      <button
+        type="button"
+        class="btn flex-1"
+        (click)="onCancel()">
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-primary flex-1"
+        [disabled]="loading()"
+        (click)="onUploadFile()">
+
+        @if (loading()) {
+          <span class="loading loading-spinner"></span>
+        }
+
+        Upload Image
+      </button>
+    </div>
+
+  </div>
+</div>

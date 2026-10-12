@@ -21,7 +21,7 @@ export class MemberService {
     return this.http.get<Member>(
       this.baseUrl + 'members/' + id
     ).pipe(tap(member => this.member.set(member))
-  );;
+  );
   }
 
   getMemberPhotos(id: string) {
@@ -34,4 +34,22 @@ updateMember(member: EditableMember) {
   return this.http.put(this.baseUrl + 'members', member);
 }
 
+
+uploadPhoto(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return this.http.post<Photo>(
+    this.baseUrl + 'members/add-photo',
+    formData
+  );
+}
+
+setMainPhoto(photo: Photo) {
+  return this.http.put(
+    
+    this.baseUrl + 'members/set-main-photo/' + photo.id,
+    {}
+  );
+}
 }
