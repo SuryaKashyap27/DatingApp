@@ -52,4 +52,9 @@ setMainPhoto(photo: Photo) {
     {}
   );
 }
+
+deletePhoto(photoId: number)
+{
+  return this.http.delete(this.baseUrl+'members/delete-photo/'+photoId);
+}
 }
