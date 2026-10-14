@@ -13,5 +13,17 @@ namespace API.DTO
         [Required]
         [MaxLength(8, ErrorMessage="Password must be minimum 8 characters")]
         public  required string Password {get; set;}
+
+         [Required]
+        public required string Gender { get; set; } = "";
+
+        [Required]
+        public required string City { get; set; } = "";
+
+        [Required]
+        public required string Country { get; set; } = "";
+
+        [Required]
+        public DateOnly DateOfBirth { get; set; }
     }
 }

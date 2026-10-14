@@ -5,7 +5,6 @@ import { ImageUpload } from '../../../shared/image-upload/image-upload';
 import { MemberService } from '../../../core/services/member-service';
 import { Photo } from '../../../types/member';
 import { AccountService } from '../../../core/services/account-service';
-import { User } from '../../../types/user';
 import { StarButton } from '../../../shared/star-button/star-button';
 import { DeleteButton } from '../../../shared/delete-button/delete-button';
 
@@ -43,6 +42,11 @@ export class MemberPhotos implements OnInit {
     this.memberService.uploadPhoto(file).subscribe({
       next: photo => {
         this.photos.update(photos => [...photos, photo]);
+
+         // If the member doesn't have a main image, use this photo.
+      if (!this.memberService.member()?.imageUrl) {
+        this.setMainLocalPhoto(photo);
+      }
         this.memberService.editMode.set(false);
         this.loading.set(false);
       },
@@ -53,35 +57,63 @@ export class MemberPhotos implements OnInit {
     });
   }
   
+    private setMainLocalPhoto(photo: Photo) {
+  const currentUser = this.accountService.currentUser();
 
+  if (currentUser) {
+    this.accountService.setCurrentUser({
+      ...currentUser,
+      image_URL: photo.url
+    });
+  }
 
-  setMainPhoto(photo: Photo) {
+  this.memberService.member.update(member => {
+    if (!member) return null;
+
+    return {
+      ...member,
+      imageUrl: photo.url
+    };
+  });
+}
+
+//   setMainPhoto(photo: Photo) {
+//   this.memberService.setMainPhoto(photo).subscribe({
+//     next: () => {
+//       const currentUser = this.accountService.currentUser();
+
+//       if (currentUser) {
+//         this.accountService.setCurrentUser({
+//           ...currentUser,
+//           image_URL: photo.url
+//         });
+//       }
+
+//       this.memberService.member.update(member => {
+//         if (!member) return null;
+
+//         return {
+//           ...member,
+//           imageUrl: photo.url
+//         };
+//       });
+
+//       // Send the new image URL to the parent component
+//       // this.mainPhotoChangged.emit(photo.url);`
+//     },
+//     error: error => console.error('Error setting main photo:', error)
+//   });
+// }
+
+setMainPhoto(photo: Photo) {
   this.memberService.setMainPhoto(photo).subscribe({
     next: () => {
-      const currentUser = this.accountService.currentUser();
-
-      if (currentUser) {
-        this.accountService.setCurrentUser({
-          ...currentUser,
-          image_URL: photo.url
-        });
-      }
-
-      this.memberService.member.update(member => {
-        if (!member) return null;
-
-        return {
-          ...member,
-          imageUrl: photo.url
-        };
-      });
-
-      // Send the new image URL to the parent component
-      // this.mainPhotoChangged.emit(photo.url);`
+      this.setMainLocalPhoto(photo);
     },
     error: error => console.error('Error setting main photo:', error)
   });
 }
+
 deletePhoto(photoId: number)
 {
   this.memberService.deletePhoto(photoId).subscribe({

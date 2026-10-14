@@ -1,65 +1,123 @@
-<div class="card bg-base-100 w-1/2 mx-auto flex flex-col p-6 rounded-lg shadow-lg">
+<div class="card bg-base-100 w-1/2 mx-auto my-8 flex flex-col p-6 rounded-lg shadow-lg">
 
     <div class="card-title justify-center text-3xl text-primary">
         Sign up
     </div>
 
-    <div class="card-body w-full">
+    <!-- <div class="card-body w-full">
 
-        <form
-            #registerForm="ngForm"
-            class="flex flex-col gap-4 w-full"
-            (ngSubmit)="register()">
-
-            <input
-                class="input w-full"
-                name="email"
-                [(ngModel)]="creds.Email"
-                placeholder="Email">
-
-            <input
-                class="input w-full"
-                name="displayName"
-                [(ngModel)]="creds.DisplayName"
-                placeholder="Display name">
-
-            <input
-                type="password"
-                class="input w-full"
-                name="password"
-                [(ngModel)]="creds.Password"
-                placeholder="Password">
-
-                <!-- <select  class="select w-full">
-                <option disabled selected>Pick a number</option>
-                @for (member of membersFromHome() ; track $index)
-                 {
-                        <option  value="{{member.id}}">{{member.displayName}}</option>
-
-                 }    
-                
-                </select> -->
-
-
+        <form /* #registerForm="ngForm" */ [formGroup]="registerform" class="flex flex-col gap-4 w-full"
+            (ngSubmit)="register()">         
+            <app-text-inputs label="Email" formControlName="email"/>
+            <app-text-inputs label="Display name" formControlName="displayName"/>
+            <app-text-inputs label="Password" formControlName="password" type="password"/>
+            <app-text-inputs label="Confirm Password" formControlName="confirmPassword" type="password"/>      
+     
             <div class="flex items-center justify-end gap-3">
 
-                <button
-                    type="button"
-                    class="btn"
-                    (click)="cancel()">
+                <button type="button" class="btn" (click)="cancel()">
                     Cancel
                 </button>
 
-                <button
-                    type="submit"
-                    class="btn btn-primary">
+                <button [disabled]="!registerform.valid" type="submit" class="btn btn-primary">
                     Register
                 </button>
-                
+
             </div>
 
         </form>
 
+    </div> -->
+
+    <div class="card-body w-full">
+
+        <!-- Step indicators -->
+        <ul class="steps w-full mb-6">
+            <li class="step step-primary">Credentials</li>
+            <li class="step" [class.step-primary]="currentStep() === 2">
+                Profile
+            </li>
+        </ul>
+
+        <!-- Step 1: Credentials -->
+        @if (currentStep() === 1) {
+        <form [formGroup]="credentialsForm" class="steps flex flex-col gap-4 w-full">
+
+            <div class="mt-2">
+                <app-text-inputs label="Email" formControlName="email" />
+            </div>
+
+            <app-text-inputs label="Display name" formControlName="displayName" />
+
+            <app-text-inputs label="Password" formControlName="password" type="password" />
+
+            <app-text-inputs label="Confirm Password" formControlName="confirmPassword" type="password" />
+
+            <div class="flex items-center justify-end gap-3">
+                <button type="button" class="btn" (click)="cancel()">
+                    Cancel
+                </button>
+
+                <button type="button" class="btn btn-primary" (click)="nextStep()">
+                    Next
+                </button>
+            </div>
+        </form>
+        }
+
+        <!-- Step 2: Profile -->
+        @if (currentStep() === 2) {
+        <form [formGroup]="profileForm" class="steps flex flex-col gap-4 w-full">
+
+            <div class="mt-2">
+                <label class="floating-label w-full">
+                    <span>Gender</span>
+                    <select class="select w-full" formControlName="gender">
+                        <option value="" disabled>Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </label>
+            </div>
+
+            <app-text-inputs
+                [maxDate]="getMaxDate()"
+             label="Date of Birth" formControlName="dateOfBirth" type="date" />
+
+            <app-text-inputs label="City" formControlName="city" />
+
+            <app-text-inputs label="Country" formControlName="country" />
+
+            <div class="flex items-center justify-end gap-3">
+                <button type="button" class="btn" (click)="previousStep()">
+                    Back
+                </button>
+
+                <button type="button" class="btn btn-primary" [disabled]="!profileForm.valid" (click)="register()">
+                    Register
+                </button>
+            </div>
+        </form>
+        }
+
     </div>
 
+
+    <!-- <div class="flex flex-col w-full items-start px-3 mockup-code text-lg">
+        <div>
+            Form value :{{registerform.value | json}}
+            Form status :{{registerform.status | json}}
+        </div>
+    </div> -->
+
+
+  @if (validationErrors().length > 0) {
+  <div class="mt-5 flex w-1/2 mx-auto rounded-2xl bg-base-200 p-3">
+    <ul class="flex flex-col text-error space-y-1">
+      @for (error of validationErrors(); track $index) {
+        <li>{{ error }}</li>
+      }
+    </ul>
+  </div>
+}
 </div>

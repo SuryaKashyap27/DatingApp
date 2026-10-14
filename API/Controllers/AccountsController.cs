@@ -8,62 +8,74 @@ using Microsoft.EntityFrameworkCore;
 using API.Interfaces;
 using API.Extensions;
 
+
 namespace API.Controllers
 {
-    public class AccountsController(AppDbContext context,ITokenService tokenService) : BaseApiController
+    public class AccountsController(AppDbContext context, ITokenService tokenService) : BaseApiController
     {
         [HttpPost("register")] // api/account/register
 
-        public async Task< ActionResult<userDTO>> Register(RegisterDTO registerDTO)
+        public async Task<ActionResult<userDTO>> Register(RegisterDTO registerDTO)
         {
-            if(await EmailExists(registerDTO.Email)) return BadRequest("Email is already in use");
+            if (await EmailExists(registerDTO.Email)) return BadRequest("Email is already in use");
 
-            using var hmac=new HMACSHA512();
-            var user=new AppUser
+            using var hmac = new HMACSHA512();
+            var user = new AppUser
             {
-                DisplayName=registerDTO.DisplayName,
-                Email=registerDTO.Email.ToLower(),
+                DisplayName = registerDTO.DisplayName,
+                Email = registerDTO.Email.ToLower(),
 
-                PasswordHash=hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password)),
-                PasswordSalt=hmac.Key
+                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password)),
+                PasswordSalt = hmac.Key
+
 
             };
+            user.Member = new Member
+            {
+                Id = user.Id,
+                DisplayName = registerDTO.DisplayName,
+                Gender = registerDTO.Gender,
+                City = registerDTO.City,
+                Country = registerDTO.Country,
+                DateOfBirth = registerDTO.DateOfBirth
+            };
+
             context.Users.Add(user);
             await context.SaveChangesAsync();
-             return user.ToDto(tokenService);
+            return user.ToDto(tokenService);
 
 
         }
 
-    [HttpPost("login")]
-    public async Task<ActionResult<userDTO>> Login(LoginDTO login)
+        [HttpPost("login")]
+        public async Task<ActionResult<userDTO>> Login(LoginDTO login)
         {
-            var user=await context.Users.SingleOrDefaultAsync(x=>x.Email==login.Email);
-            if (user==null)return Unauthorized("Invalid Email");
-            using var hmac=new HMACSHA512(user.PasswordSalt);
-            var computedHash=hmac.ComputeHash(Encoding.UTF8.GetBytes(login.Password));
-            
-            for (var i=0;i<computedHash.Length;i++)
+            var user = await context.Users.SingleOrDefaultAsync(x => x.Email == login.Email);
+            if (user == null) return Unauthorized("Invalid Email");
+            using var hmac = new HMACSHA512(user.PasswordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(login.Password));
+
+            for (var i = 0; i < computedHash.Length; i++)
             {
-                if(computedHash[i]!=user.PasswordHash[i]) return Unauthorized("Invalid Password");
+                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password");
             }
-            var token=tokenService.CreateToken(user);
+            var token = tokenService.CreateToken(user);
             // return new userDTO
             // {
             //     id=user.Id,
             //     DisplayName=user.DisplayName,
             //     Email=user.Email,
-                
+
             //     Token=tokenService.CreateToken(user)
             // };
-             return user.ToDto(tokenService);
+            return user.ToDto(tokenService);
 
 
         }
 
         private async Task<bool> EmailExists(string email)
         {
-            return await context.Users.AnyAsync(x => x.Email==email.ToLower());
+            return await context.Users.AnyAsync(x => x.Email == email.ToLower());
 
         }
 
