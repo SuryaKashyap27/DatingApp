@@ -57,6 +57,10 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.method === 'POST' && req.url.includes('/likes')) {
     invalidateCache('/likes');
   }
+  // Invalidate cached message-related GET responses
+  if (req.method === 'POST' && req.url.includes('/messages')) {
+  invalidateCache('/messages');
+}
 
   // Return cached GET responses without setting the busy state.
   if (req.method === 'GET') {
